@@ -360,7 +360,7 @@ paket-files/
 *.xsd.cs
 
 # Jetbrains Rider
-idea/
+.idea/
 
 # OpenCover UI analysis results
 OpenCover/

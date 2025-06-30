@@ -4,12 +4,8 @@ namespace CarWashProcessor.Services;
 
 public class CarJobProcessorService
 {
-	private readonly BasicWashService _basicWashService;
-	private readonly AwesomeWashService _awesomeWashService;
-	private readonly ToTheMaxWashService _toTheMaxWashService;
-	private readonly TireShineService _tireShineService;
-	private readonly InteriorCleanService _interiorCleanService;
-	private readonly HandWaxAndShineService _handWaxAndShineService;
+	private readonly Dictionary<EServiceWash, IWashService> _washServices;
+	private readonly Dictionary<EServiceAddon, IWashService> _addOnServices;
 
 	public CarJobProcessorService(
 		BasicWashService basicWashService,
@@ -21,54 +17,43 @@ public class CarJobProcessorService
 	)
 	{
 		// Set services
-		_basicWashService = basicWashService;
-		_awesomeWashService = awesomeWashService;
-		_toTheMaxWashService = toTheMaxWashService;
-		_tireShineService = tireShineService;
-		_interiorCleanService = interiorCleanService;
-		_handWaxAndShineService = handWaxAndShineService;
+		_washServices = new Dictionary<EServiceWash, IWashService>
+		{
+			[EServiceWash.Basic] = basicWashService,
+			[EServiceWash.Awesome] = awesomeWashService,
+			[EServiceWash.ToTheMax] = toTheMaxWashService
+		};
+		_addOnServices = new Dictionary<EServiceAddon, IWashService>
+		{
+			[EServiceAddon.TireShine] = tireShineService,
+			[EServiceAddon.InteriorClean] = interiorCleanService,
+			[EServiceAddon.HandWaxAndShine] = handWaxAndShineService
+		};
 	}
 
 	public async Task ProcessCarJobAsync(CarJob carJob)
 	{
-		// Check if wash service
-		switch (carJob.ServiceWash)
+		// Check wash service
+		try
 		{
-			case EServiceWash.Basic:
-				// Do basic wash
-				await _basicWashService.DoBasicWashAsync(carJob);
-				break;
-			case EServiceWash.Awesome:
-				// Do awesome wash
-				await _awesomeWashService.DoAwesomeWashAsync(carJob);
-				break;
-			case EServiceWash.ToTheMax:
-				// Do to the max wash
-				await _toTheMaxWashService.DoToTheMaxWashAsync(carJob);
-				break;
-			default:
-				// Throw error
-				throw new InvalidOperationException(
-					$"Wash service ({carJob.ServiceWash}) not recognized."
-				);
+			await _washServices[carJob.ServiceWash].DoServiceAsync(carJob);
 		}
-		// Check if tire shine
-		if (carJob.ServiceAddons.Contains(EServiceAddon.TireShine))
+		catch (KeyNotFoundException)
 		{
-			// Shine tires
-			await _tireShineService.ShineTiresAsync(carJob);
+			throw new KeyNotFoundException($"Wash service ({carJob.ServiceWash}) not recognized.");
 		}
-		// Check if interior clean
-		if (carJob.ServiceAddons.Contains(EServiceAddon.InteriorClean))
+		
+		// Check for addons
+		foreach (var addons in carJob.ServiceAddons)
 		{
-			// Clean interior
-			await _interiorCleanService.CleanInteriorAsync(carJob);
-		}
-		// Check if hand wax and shine
-		if (carJob.ServiceAddons.Contains(EServiceAddon.HandWaxAndShine))
-		{
-			// Hand wax and shine
-			await _handWaxAndShineService.HandWaxAndShineAsync(carJob);
+			try
+			{
+				await _addOnServices[addons].DoServiceAsync(carJob);
+			}
+			catch (KeyNotFoundException)
+			{
+				throw new KeyNotFoundException($"Addon ({addons}) not recognized.");
+			}
 		}
 	}
 }
