@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using CarWashProcessor.Services;
 
 namespace CarWashProcessor;
@@ -23,11 +25,15 @@ public class Program
 	{
 		// Register services
 		services.AddSingleton<CarJobProcessorService>();
-		services.AddSingleton<BasicWashService>();
-		services.AddSingleton<AwesomeWashService>();
-		services.AddSingleton<ToTheMaxWashService>();
-		services.AddSingleton<TireShineService>();
-		services.AddSingleton<InteriorCleanService>();
-		services.AddSingleton<HandWaxAndShineService>();
+		
+		// Search through the assembly for instances of IWashService
+		var washServices = Assembly.GetExecutingAssembly()
+			.GetTypes()
+			.Where(p=>!p.IsAbstract && !p.IsInterface && typeof(IWashService).IsAssignableFrom(p));
+
+		foreach (var washService in washServices)
+		{
+			services.AddSingleton(washService);
+		}
 	}
 }
