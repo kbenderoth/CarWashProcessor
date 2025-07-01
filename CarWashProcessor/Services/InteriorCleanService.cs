@@ -2,9 +2,11 @@
 
 namespace CarWashProcessor.Services;
 
-public class InteriorCleanService : IWashService
+public class InteriorCleanService : IWashService, IAddonType
 {
 	private readonly ILogger<InteriorCleanService> _logger;
+
+	public EServiceAddon AddonType => EServiceAddon.InteriorClean;
 
 	public InteriorCleanService(ILogger<InteriorCleanService> logger)
 	{

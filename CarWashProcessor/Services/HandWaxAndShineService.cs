@@ -2,9 +2,11 @@
 
 namespace CarWashProcessor.Services;
 
-public class HandWaxAndShineService : IWashService
+public class HandWaxAndShineService : IWashService, IAddonType
 {
 	private readonly ILogger<HandWaxAndShineService> _logger;
+
+	public EServiceAddon AddonType => EServiceAddon.HandWaxAndShine;
 
 	public HandWaxAndShineService(ILogger<HandWaxAndShineService> logger)
 	{

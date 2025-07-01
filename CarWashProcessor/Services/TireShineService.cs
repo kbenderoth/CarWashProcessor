@@ -2,9 +2,11 @@
 
 namespace CarWashProcessor.Services;
 
-public class TireShineService : IWashService
+public class TireShineService : IWashService, IAddonType
 {
 	private readonly ILogger<TireShineService> _logger;
+
+	public EServiceAddon AddonType => EServiceAddon.TireShine;
 
 	public TireShineService(ILogger<TireShineService> logger)
 	{

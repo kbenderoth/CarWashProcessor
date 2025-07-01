@@ -2,9 +2,11 @@
 
 namespace CarWashProcessor.Services;
 
-public class AwesomeWashService : IWashService
+public class AwesomeWashService : IWashService, IWashType
 {
 	private readonly ILogger<AwesomeWashService> _logger;
+
+	public EServiceWash WashType => EServiceWash.Awesome;
 
 	public AwesomeWashService(ILogger<AwesomeWashService> logger)
 	{

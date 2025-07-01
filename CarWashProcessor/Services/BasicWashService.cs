@@ -2,9 +2,11 @@
 
 namespace CarWashProcessor.Services;
 
-public class BasicWashService : IWashService
+public class BasicWashService : IWashService, IWashType
 {
 	private readonly ILogger<BasicWashService> _logger;
+	
+	public EServiceWash WashType => EServiceWash.Basic;
 
 	public BasicWashService(ILogger<BasicWashService> logger)
 	{

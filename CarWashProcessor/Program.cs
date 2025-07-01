@@ -33,7 +33,7 @@ public class Program
 
 		foreach (var washService in washServices)
 		{
-			services.AddSingleton(washService);
+			services.AddSingleton(typeof(IWashService), washService);
 		}
 	}
 }

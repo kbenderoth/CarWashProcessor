@@ -7,28 +7,14 @@ public class CarJobProcessorService
 	private readonly Dictionary<EServiceWash, IWashService> _washServices;
 	private readonly Dictionary<EServiceAddon, IWashService> _addOnServices;
 
-	public CarJobProcessorService(
-		BasicWashService basicWashService,
-		AwesomeWashService awesomeWashService,
-		ToTheMaxWashService toTheMaxWashService,
-		TireShineService tireShineService,
-		InteriorCleanService interiorCleanService,
-		HandWaxAndShineService handWaxAndShineService
-	)
+	public CarJobProcessorService(IEnumerable<IWashService> washServices)
 	{
 		// Set services
-		_washServices = new Dictionary<EServiceWash, IWashService>
-		{
-			[EServiceWash.Basic] = basicWashService,
-			[EServiceWash.Awesome] = awesomeWashService,
-			[EServiceWash.ToTheMax] = toTheMaxWashService
-		};
-		_addOnServices = new Dictionary<EServiceAddon, IWashService>
-		{
-			[EServiceAddon.TireShine] = tireShineService,
-			[EServiceAddon.InteriorClean] = interiorCleanService,
-			[EServiceAddon.HandWaxAndShine] = handWaxAndShineService
-		};
+		_washServices = new Dictionary<EServiceWash, IWashService>();
+		_addOnServices = new Dictionary<EServiceAddon, IWashService>();
+
+		InitWashServices(washServices);
+
 	}
 
 	public async Task ProcessCarJobAsync(CarJob carJob)
@@ -54,6 +40,17 @@ public class CarJobProcessorService
 			{
 				throw new KeyNotFoundException($"Addon ({addons}) not recognized.");
 			}
+		}
+	}
+
+	private void InitWashServices(IEnumerable<IWashService> washServices)
+	{
+		foreach (var wash in washServices)
+		{
+			if (wash is IWashType washType)
+				_washServices[washType.WashType] = wash;
+			else if (wash is IAddonType addonType)
+				_addOnServices[addonType.AddonType] = wash;
 		}
 	}
 }

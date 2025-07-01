@@ -2,9 +2,11 @@
 
 namespace CarWashProcessor.Services;
 
-public class ToTheMaxWashService : IWashService
+public class ToTheMaxWashService : IWashService, IWashType
 {
 	private readonly ILogger<ToTheMaxWashService> _logger;
+
+	public EServiceWash WashType => EServiceWash.ToTheMax;
 
 	public ToTheMaxWashService(ILogger<ToTheMaxWashService> logger)
 	{
